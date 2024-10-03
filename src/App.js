@@ -1,14 +1,18 @@
-import './App.css';
-import Card from './components/card/Card';
-import NavBar from './components/navbar/NavBar';
+import React from "react";
+import "./App.css";
+import Card from "./components/card/Card";
+import NavBar from "./components/navbar/NavBar";
 
-function App() {
-  return (
-    <div className='app-container'>
-      <NavBar />
-      <Card />
-    </div>
-  );
+class App extends React.Component {
+  
+  render() {
+    return (
+      <div className="app-container">
+        <NavBar />
+        <Card />
+      </div>
+    );
+  }
 }
 
 export default App;

@@ -61,3 +61,10 @@
   font-size: 12pt;
   color: #5c636a;
 }
+
+
+@media screen and (max-width: 800px) {
+  .main-card {
+    max-width: 90%;
+  }
+}

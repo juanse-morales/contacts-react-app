@@ -1,8 +1,32 @@
 import React from "react";
 import "./Card.css";
+import AddContact from "../modal/AddContact";
 
 class Card extends React.Component {
+  constructor(){
+    super();
+    this.handleOpenModal = this.handleOpenModal.bind(this);
+    this.handleCloseModal = this.handleCloseModal.bind(this);
+  }
+
+  state = {
+    showModal: false
+  };
+
+  handleOpenModal() {
+    this.setState({
+      showModal: true
+    });
+  }
+
+  handleCloseModal() {
+    this.setState({
+      showModal: false
+    });
+  }
+
   render() {
+    const { showModal } = this.state;
     return (
       <>
         <div className="main-card">
@@ -59,6 +83,7 @@ class Card extends React.Component {
               <button
                 type="button"
                 className="add-button"
+                onClick={this.handleOpenModal}
                 data-bs-toggle="modal"
                 data-bs-target="#addContactModal"
               >
@@ -67,6 +92,7 @@ class Card extends React.Component {
             </div>
           </div>
         </div>
+        <AddContact showModal={showModal} closeModal={this.handleCloseModal} />
       </>
     );
   }

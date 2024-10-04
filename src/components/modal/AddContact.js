@@ -5,18 +5,18 @@ import Swal from "sweetalert2";
 
 
 class AddContact extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.handleInput = this.handleInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   state = {
-    name: "",
-    last_name: "",
-    phone_number: "",
-    email: "",
+    name: this.props.contactObject ? this.props.contactObject.name : "",
+    last_name: this.props.contactObject ? this.props.contactObject.last_name : "",
+    phone_number: this.props.contactObject ? this.props.contactObject.phone_number : "",
+    email: this.props.contactObject ? this.props.contactObject.email : "",
     errors: [],
   };
 
@@ -64,6 +64,8 @@ class AddContact extends React.Component {
 
   render() {
     const { name, last_name, phone_number, email } = this.state;
+    console.log("Name:", name);
+    
     return (
       <>
         <div

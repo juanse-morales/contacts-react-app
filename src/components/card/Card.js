@@ -2,11 +2,25 @@ import React from "react";
 import "./Card.css";
 import AddContact from "../modal/AddContact";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 class Card extends React.Component {
 
   state = {
-    contacts: []
+    contacts: [],
+    selectContactObject: null
+  }
+
+  getContactById(id) {
+    Swal.showLoading();
+    axios.get('http://localhost:8000/api/contact/'+id)
+      .then(res => {
+        Swal.close();
+        console.log(res.data);
+
+        this.setState({ selectContactObject: res.data.contact });
+      })
+      .catch(console.log);
   }
 
   getIndexContact() {
@@ -22,7 +36,7 @@ class Card extends React.Component {
   }
 
   render() {
-    const { contacts } = this.state;
+    const { contacts, selectedContactObject } = this.state;
     return (
       <>
         <div className="main-card">
@@ -53,7 +67,12 @@ class Card extends React.Component {
                 </thead>
                 <tbody>
                   {contacts.map(contact => (
-                    <tr key={contact.id} data-bs-toggle="modal" data-bs-target="#addContactModal">
+                    <tr 
+                      key={contact.id}
+                      onClick={()=>this.getContactById(contact.id)} 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#addContactModal"
+                    >
                       <td>{contact.name}</td>
                       <td>{contact.last_name}</td>
                       <td>{contact.phone_number}</td>
@@ -77,7 +96,7 @@ class Card extends React.Component {
             </div>
           </div>
         </div>
-        <AddContact />
+        <AddContact contactObject={selectedContactObject} />
       </>
     );
   }

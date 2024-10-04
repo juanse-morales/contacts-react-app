@@ -1,10 +1,28 @@
 import React from "react";
 import "./Card.css";
 import AddContact from "../modal/AddContact";
+import axios from "axios";
 
 class Card extends React.Component {
 
+  state = {
+    contacts: []
+  }
+
+  getIndexContact() {
+    axios.get('http://localhost:8000/api/contact')
+      .then(res => {
+        console.log(res.data);
+        this.setState({contacts: res.data});
+      });
+  }
+
+  componentDidMount() {
+    this.getIndexContact();
+  }
+
   render() {
+    const { contacts } = this.state;
     return (
       <>
         <div className="main-card">
@@ -34,24 +52,14 @@ class Card extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr data-bs-toggle="modal" data-bs-target="#viewContactModal">
-                    <td>María</td>
-                    <td>Pérez</td>
-                    <td>310 523 2245</td>
-                    <td>maria@gmail.com</td>
-                  </tr>
-                  <tr data-bs-toggle="modal" data-bs-target="#viewContactModal">
-                    <td>Sara</td>
-                    <td>Gómez</td>
-                    <td>315 400 1132</td>
-                    <td>sara@gmail.com</td>
-                  </tr>
-                  <tr data-bs-toggle="modal" data-bs-target="#viewContactModal">
-                    <td>Fernanda</td>
-                    <td>Contrera</td>
-                    <td>301 500 1507</td>
-                    <td>fernanda@gmail.com</td>
-                  </tr>
+                  {contacts.map(contact => (
+                    <tr key={contact.id} data-bs-toggle="modal" data-bs-target="#addContactModal">
+                      <td>{contact.name}</td>
+                      <td>{contact.last_name}</td>
+                      <td>{contact.phone_number}</td>
+                      <td>{contact.email}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

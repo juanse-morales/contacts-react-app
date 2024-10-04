@@ -1,6 +1,8 @@
 import React from "react";
 import "./AddContact.css";
 import axios from "axios";
+import Swal from "sweetalert2";
+
 
 class AddContact extends React.Component {
   constructor() {
@@ -33,9 +35,7 @@ class AddContact extends React.Component {
 
     const {
       name,
-      last_name,
-      phone_number,
-      email
+      phone_number
     } = this.state;
 
     const errors = [];
@@ -50,9 +50,15 @@ class AddContact extends React.Component {
     const contactForm = document.getElementById("contact-form");
     const contactFormData = new FormData(contactForm);
 
+    Swal.showLoading();
     axios
       .post("http://localhost:8000/api/contact", contactFormData)
-      .then((res) => console.log(res.data))
+      .then((res) => {
+        Swal.close();
+        console.log(res.data);
+
+        Swal.fire("Guardado con Éxito!")
+      })
       .catch(console.log);
   }
 

@@ -30,7 +30,7 @@ class AddContact extends React.Component {
               <div className="modal-body">
                 <form className="contact-form">
                   <div className="contact-photo-container">
-                    <img src="img/user.png" alt="contact photo" width="160px" />
+                    <img src={`${process.env.PUBLIC_URL}/user.png`} alt="contact photo" width="160px" />
                   </div>
                   <div className="contact-info-container">
                     <div className="row">

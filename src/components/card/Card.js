@@ -17,25 +17,11 @@ class Card extends React.Component {
   state = {
     contacts: [],
     showModal: false,
-    selectContactObject: null
-  }
-
-  getContactById(id) {
-    Swal.showLoading();
-    axios.get('http://localhost:8000/api/contact/'+id)
-      .then(res => {
-        Swal.close();
-        console.log(res.data);
-
-        this.setState({ selectContactObject: res.data.contact });
-      })
-      .catch(console.log);
+    selectedContactObject: null
   }
 
   handleRowClick(contactObject) {
-    console.log('obj contact on card: ', contactObject);
-    
-    this.setState({ selectContactObject: contactObject, showModal: true });
+    this.setState({ selectedContactObject: contactObject, showModal: true });
   }
 
   handleOpenModal() {
@@ -43,7 +29,7 @@ class Card extends React.Component {
   }
 
   handleCloseModal() {
-    this.setState({ showModal: false, selectContactObject: null });
+    this.setState({ showModal: false, selectedContactObject: null });
   }
 
   getIndexContact() {

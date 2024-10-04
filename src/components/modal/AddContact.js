@@ -63,11 +63,14 @@ class AddContact extends React.Component {
   }
 
   render() {
-    const { name, last_name, phone_number, email } = this.state;
     const { showModal, closeModal, contactObject } = this.props;
-    
-    console.log('props', this.props);
-    console.log("contact obj: ", contactObject);
+
+    let name = contactObject ? (contactObject.name ? contactObject.name : "") : "";
+    let last_name = contactObject ? (contactObject.last_name ?  contactObject.last_name: "") : "";
+    let phone_number = contactObject ? (contactObject.phone_number ? contactObject.phone_number : "") : "";
+    let email = contactObject ? (contactObject.email ? contactObject.email : "") : "";
+
+    // const { name, last_name, phone_number, email } = contactObject;
 
     return (
       <>
@@ -88,7 +91,6 @@ class AddContact extends React.Component {
                   <button
                     type="button"
                     className="btn-close"
-                    
                     aria-label="Close"
                     onClick={closeModal}
                   ></button>
@@ -198,7 +200,9 @@ class AddContact extends React.Component {
             </div>
           </div>
         )}
-        {showModal && <div className="modal-backdrop show" onClick={closeModal}></div>}
+        {showModal && (
+          <div className="modal-backdrop show" onClick={closeModal}></div>
+        )}
       </>
     );
   }

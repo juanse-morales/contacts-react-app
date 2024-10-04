@@ -1,10 +1,63 @@
 import React from "react";
 import "./AddContact.css";
+import axios from "axios";
 
 class AddContact extends React.Component {
-  
+  constructor() {
+    super();
+
+    this.handleInput = this.handleInput.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  state = {
+    name: "",
+    last_name: "",
+    phone_number: "",
+    email: "",
+    errors: [],
+  };
+
+  verificarError(elemento) {
+    return this.state.errors.indexOf(elemento) !== -1;
+  }
+
+  handleInput(event) {
+    const state = this.state;
+    state[event.target.name] = event.target.value;
+    this.setState({ state });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+
+    const {
+      name,
+      last_name,
+      phone_number,
+      email
+    } = this.state;
+
+    const errors = [];
+
+    if(!name) errors.push('name');
+    if(!phone_number) errors.push('phone_number');
+
+    this.setState({ errors: errors});
+
+    if(errors.length > 0) return false;
+
+    const contactForm = document.getElementById("contact-form");
+    const contactFormData = new FormData(contactForm);
+
+    axios
+      .post("http://localhost:8000/api/contact", contactFormData)
+      .then((res) => console.log(res.data))
+      .catch(console.log);
+  }
 
   render() {
+    const { name, last_name, phone_number, email } = this.state;
     return (
       <>
         <div
@@ -28,9 +81,17 @@ class AddContact extends React.Component {
                 ></button>
               </div>
               <div className="modal-body">
-                <form className="contact-form">
+                <form
+                  id="contact-form"
+                  className="contact-form"
+                  onSubmit={this.handleSubmit}
+                >
                   <div className="contact-photo-container">
-                    <img src={`${process.env.PUBLIC_URL}/user.png`} alt="contact photo" width="160px" />
+                    <img
+                      src={`${process.env.PUBLIC_URL}/user.png`}
+                      alt="contact photo"
+                      width="160px"
+                    />
                   </div>
                   <div className="contact-info-container">
                     <div className="row">
@@ -41,8 +102,11 @@ class AddContact extends React.Component {
                           </label>
                           <input
                             type="text"
-                            className="form-control"
+                            className={(this.verificarError('name') ? "is-invalid" : "" ) + " form-control"} 
                             id="inputName"
+                            name="name"
+                            onChange={this.handleInput}
+                            value={name}
                           />
                         </div>
                       </div>
@@ -55,6 +119,9 @@ class AddContact extends React.Component {
                             type="text"
                             className="form-control"
                             id="inputLastName"
+                            name="last_name"
+                            onChange={this.handleInput}
+                            value={last_name}
                           />
                         </div>
                       </div>
@@ -66,9 +133,12 @@ class AddContact extends React.Component {
                             Phone number
                           </label>
                           <input
-                            type="number"
-                            className="form-control"
+                            type="text"
+                            className={(this.verificarError('phone_number') ? "is-invalid" : "" ) + " form-control"} 
                             id="inputPhone"
+                            name="phone_number"
+                            onChange={this.handleInput}
+                            value={phone_number}
                           />
                         </div>
                       </div>
@@ -81,6 +151,9 @@ class AddContact extends React.Component {
                             type="email"
                             className="form-control"
                             id="inputEmail"
+                            name="email"
+                            onChange={this.handleInput}
+                            value={email}
                           />
                         </div>
                       </div>
@@ -89,7 +162,11 @@ class AddContact extends React.Component {
                 </form>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-primary">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={this.handleSubmit}
+                >
                   Save
                 </button>
               </div>

@@ -6,8 +6,17 @@ import Swal from "sweetalert2";
 
 class Card extends React.Component {
 
+  constructor() {
+    super();
+
+    this.handleOpenModal = this.handleOpenModal.bind(this);
+    this.handleCloseModal = this.handleCloseModal.bind(this);
+    this.handleRowClick = this.handleRowClick.bind(this);
+  }
+
   state = {
     contacts: [],
+    showModal: false,
     selectContactObject: null
   }
 
@@ -23,6 +32,20 @@ class Card extends React.Component {
       .catch(console.log);
   }
 
+  handleRowClick(contactObject) {
+    console.log('obj contact on card: ', contactObject);
+    
+    this.setState({ selectContactObject: contactObject, showModal: true });
+  }
+
+  handleOpenModal() {
+    this.setState({ showModal: true });
+  }
+
+  handleCloseModal() {
+    this.setState({ showModal: false, selectContactObject: null });
+  }
+
   getIndexContact() {
     axios.get('http://localhost:8000/api/contact')
       .then(res => {
@@ -36,7 +59,7 @@ class Card extends React.Component {
   }
 
   render() {
-    const { contacts, selectedContactObject } = this.state;
+    const { contacts, showModal, selectedContactObject } = this.state;
     return (
       <>
         <div className="main-card">
@@ -69,9 +92,8 @@ class Card extends React.Component {
                   {contacts.map(contact => (
                     <tr 
                       key={contact.id}
-                      onClick={()=>this.getContactById(contact.id)} 
-                      data-bs-toggle="modal" 
-                      data-bs-target="#addContactModal"
+                      onClick={() => this.handleRowClick(contact)} 
+                      
                     >
                       <td>{contact.name}</td>
                       <td>{contact.last_name}</td>
@@ -88,15 +110,14 @@ class Card extends React.Component {
               <button
                 type="button"
                 className="add-button"
-                data-bs-toggle="modal"
-                data-bs-target="#addContactModal"
+                onClick={this.handleOpenModal}
               >
                 <i className="add-button-icon bi bi-plus-circle-fill"></i>
               </button>
             </div>
           </div>
         </div>
-        <AddContact contactObject={selectedContactObject} />
+        <AddContact showModal={showModal} closeModal={this.handleCloseModal} contactObject={selectedContactObject} />
       </>
     );
   }

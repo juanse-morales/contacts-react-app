@@ -90,20 +90,59 @@ class AddContact extends React.Component {
 
   onDelete(id) {
     Swal.showLoading();
-    axios.delete('http://localhost:8000/api/contact/'+id)
-      .then(res => {
+    axios
+      .delete("http://localhost:8000/api/contact/" + id)
+      .then((res) => {
         Swal.close();
         console.log(res.data);
-        
+
         Swal.fire("Eliminado con éxito!");
         this.props.closeModal();
       })
-      .catch(err => {
+      .catch((err) => {
         Swal.close();
         console.log(err);
-        
+
         Swal.fire("Error al eliminar");
+      });
+  }
+
+  onArchive(id) {
+    Swal.showLoading();
+    axios
+      .put("http://localhost:8000/api/contact/archive/" + id)
+      .then((res) => {
+        Swal.close();
+        console.log(res.data);
+
+        Swal.fire("Archivado con éxito!");
+        this.props.closeModal();
       })
+      .catch((err) => {
+        Swal.close();
+        console.log(err);
+
+        Swal.fire("Error al archivar");
+      });
+  }
+
+  onBlock(id) {
+    Swal.showLoading();
+    axios
+      .put("http://localhost:8000/api/contact/block/" + id)
+      .then((res) => {
+        Swal.close();
+        console.log(res.data);
+
+        Swal.fire("Bloqueado con éxito!");
+        this.props.closeModal();
+      })
+      .catch((err) => {
+        Swal.close();
+        console.log(err);
+
+        Swal.fire("Error al bloquear");
+      });
   }
 
   componentDidMount() {
@@ -238,14 +277,30 @@ class AddContact extends React.Component {
                   </form>
                 </div>
                 <div className="modal-footer">
-                  {contactObject && (
-                    <button 
-                      type="button" 
-                      className="btn btn-danger"
-                      onClick={() => this.onDelete(contactObject.id)}
-                    >
-                      Delete
-                    </button>
+                  {contactObject.is_active == 1 && (
+                    <>
+                      <button
+                        type="button"
+                        className="btn btn-danger"
+                        onClick={() => this.onDelete(contactObject.id)}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-info"
+                        onClick={() => this.onArchive(contactObject.id)}
+                      >
+                        Archive
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn-info"
+                        onClick={() => this.onBlock(contactObject.id)}
+                      >
+                        Block
+                      </button>
+                    </>
                   )}
                   <button
                     type="button"

@@ -10,10 +10,13 @@ class App extends React.Component {
       <div>
         <Routes>
           <Route path="/" element={<Layout />} >
-            <Route path="/home" element={<Card />} />
+            <Route path="/home" element={<Card page="home" />} />
+            <Route path="/archived" element={<Card page="archived" />} />
+            <Route path="/blocked" element={<Card page="blocked" />} />
+            <Route path="/deleted" element={<Card page="deleted" />} />
 
-            <Route path="/" element={<Card />} />
-            <Route path="*" element={<Card />} />
+            <Route path="/" element={<Card page="home" />} />
+            <Route path="*" element={<Card page="home" />} />
           </Route>
           
           

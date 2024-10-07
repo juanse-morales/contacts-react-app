@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 import "./NavBar.css";
 
 class NavBar extends React.Component {
@@ -7,7 +7,11 @@ class NavBar extends React.Component {
     return (
       <nav className="navbar navbar-expand-md bg-body-tertiary">
         <div className="container-fluid">
-          <img className="logo-img" src={`${process.env.PUBLIC_URL}/icon.png`} alt="logo" />
+          <img
+            className="logo-img"
+            src={`${process.env.PUBLIC_URL}/icon.png`}
+            alt="logo"
+          />
           <a className="navbar-brand" href="#">
             Contacts
           </a>
@@ -25,24 +29,24 @@ class NavBar extends React.Component {
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav">
               <li className="nav-item">
-                <a className="nav-link active" aria-current="page" href="#">
+                <Link className="nav-link active" to={"/home"}>
                   Home
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">
+                <Link className="nav-link" to={"/archived"}>
                   Archived
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">
+                <Link className="nav-link" to={"/blocked"}>
                   Blocked
-                </a>
+                </Link>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#">
+                <Link className="nav-link" to={"/deleted"}>
                   Deleted
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

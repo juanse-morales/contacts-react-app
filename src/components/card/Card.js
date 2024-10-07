@@ -5,8 +5,8 @@ import AuthAxios from "../../services/AuthAxios";
 import Swal from "sweetalert2";
 
 class Card extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.handleCreateClick = this.handleCreateClick.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
@@ -14,6 +14,7 @@ class Card extends React.Component {
   }
 
   state = {
+    page: "home",
     contacts: [],
     showModal: false,
     selectedContactObject: null,
@@ -29,7 +30,27 @@ class Card extends React.Component {
 
   handleCloseModal() {
     this.setState({ showModal: false, selectedContactObject: null });
-    this.getIndexContact();
+    this.getIndex();
+  }
+
+  getIndex(page) {
+    switch (page) {
+      case "home": 
+        this.getIndexContact();
+        break;
+      case "archived":
+        this.getArchivedContact();
+        break;
+      case "deleted":
+        this.getDeletedContact();
+        break;
+      case "blocked":
+        this.getBlockedContact();
+        break;
+      default:
+        this.getIndexContact();
+        break;
+    }
   }
 
   getIndexContact() {
@@ -39,8 +60,37 @@ class Card extends React.Component {
     });
   }
 
+  getArchivedContact() {
+    AuthAxios.get("/contact/archived").then((res) => {
+      console.log(res.data);
+      this.setState({ contacts: res.data });
+    });
+  }
+  
+  getDeletedContact() {
+    AuthAxios.get("/contact/deleted").then((res) => {
+      console.log(res.data);
+      this.setState({ contacts: res.data });
+    });
+  }
+  
+  getBlockedContact() {
+    AuthAxios.get("/contact/blocked").then((res) => {
+      console.log(res.data);
+      this.setState({ contacts: res.data });
+    });
+  }
+
   componentDidMount() {
-    this.getIndexContact();
+    const page = this.props.page;
+    this.getIndex(page);
+  }
+
+  componentDidUpdate(prevProps) {
+    const page = this.props.page;
+    if ( prevProps.page !== page) {
+      this.getIndex(page);
+    }
   }
 
   render() {

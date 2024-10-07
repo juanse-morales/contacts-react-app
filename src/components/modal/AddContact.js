@@ -1,7 +1,7 @@
 import React from "react";
 import "./AddContact.css";
-import axios from "axios";
 import Swal from "sweetalert2";
+import AuthAxios from "../../services/AuthAxios";
 
 class AddContact extends React.Component {
   constructor(props) {
@@ -50,7 +50,7 @@ class AddContact extends React.Component {
     if (contactObject) {
       Swal.showLoading();
       const objectToSend = { name, last_name, phone_number, email };
-      axios
+      AuthAxios
         .put(
           "http://localhost:8000/api/contact/" + contactObject.id,
           objectToSend
@@ -70,7 +70,7 @@ class AddContact extends React.Component {
         });
     } else {
       Swal.showLoading();
-      axios
+      AuthAxios
         .post("http://localhost:8000/api/contact", contactFormData)
         .then((res) => {
           Swal.close();
@@ -90,7 +90,7 @@ class AddContact extends React.Component {
 
   onDelete(id) {
     Swal.showLoading();
-    axios
+    AuthAxios
       .delete("http://localhost:8000/api/contact/" + id)
       .then((res) => {
         Swal.close();
@@ -109,7 +109,7 @@ class AddContact extends React.Component {
 
   onArchive(id) {
     Swal.showLoading();
-    axios
+    AuthAxios
       .put("http://localhost:8000/api/contact/archive/" + id)
       .then((res) => {
         Swal.close();
@@ -128,7 +128,7 @@ class AddContact extends React.Component {
 
   onBlock(id) {
     Swal.showLoading();
-    axios
+    AuthAxios
       .put("http://localhost:8000/api/contact/block/" + id)
       .then((res) => {
         Swal.close();

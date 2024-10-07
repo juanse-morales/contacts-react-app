@@ -1,7 +1,7 @@
 import React from "react";
 import "./Card.css";
 import AddContact from "../modal/AddContact";
-import axios from "axios";
+import AuthAxios from "../../services/AuthAxios";
 import Swal from "sweetalert2";
 
 class Card extends React.Component {
@@ -33,7 +33,7 @@ class Card extends React.Component {
   }
 
   getIndexContact() {
-    axios.get("http://localhost:8000/api/contact").then((res) => {
+    AuthAxios.get("/contact").then((res) => {
       console.log(res.data);
       this.setState({ contacts: res.data });
     });

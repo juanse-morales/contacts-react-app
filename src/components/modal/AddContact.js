@@ -52,7 +52,7 @@ class AddContact extends React.Component {
       const objectToSend = { name, last_name, phone_number, email };
       AuthAxios
         .put(
-          "http://localhost:8000/api/contact/" + contactObject.id,
+          "/contact/" + contactObject.id,
           objectToSend
         )
         .then((res) => {
@@ -71,7 +71,7 @@ class AddContact extends React.Component {
     } else {
       Swal.showLoading();
       AuthAxios
-        .post("http://localhost:8000/api/contact", contactFormData)
+        .post("/contact", contactFormData)
         .then((res) => {
           Swal.close();
           console.log(res.data);
@@ -91,7 +91,7 @@ class AddContact extends React.Component {
   onDelete(id) {
     Swal.showLoading();
     AuthAxios
-      .delete("http://localhost:8000/api/contact/" + id)
+      .delete("/contact/" + id)
       .then((res) => {
         Swal.close();
         console.log(res.data);
@@ -110,7 +110,7 @@ class AddContact extends React.Component {
   onArchive(id) {
     Swal.showLoading();
     AuthAxios
-      .put("http://localhost:8000/api/contact/archive/" + id)
+      .put("/contact/archive/" + id)
       .then((res) => {
         Swal.close();
         console.log(res.data);
@@ -129,7 +129,7 @@ class AddContact extends React.Component {
   onBlock(id) {
     Swal.showLoading();
     AuthAxios
-      .put("http://localhost:8000/api/contact/block/" + id)
+      .put("/contact/block/" + id)
       .then((res) => {
         Swal.close();
         console.log(res.data);
@@ -142,6 +142,25 @@ class AddContact extends React.Component {
         console.log(err);
 
         Swal.fire("Error al bloquear");
+      });
+  }
+
+  onRestore(id) {
+    Swal.showLoading();
+    AuthAxios
+      .put("/contact/restore/" + id)
+      .then((res) => {
+        Swal.close();
+        console.log(res.data);
+
+        Swal.fire("Restaurado con éxito!");
+        this.props.closeModal();
+      })
+      .catch((err) => {
+        Swal.close();
+        console.log(err);
+
+        Swal.fire("Error al restaurar");
       });
   }
 
@@ -301,6 +320,15 @@ class AddContact extends React.Component {
                         Block
                       </button>
                     </>
+                  )}
+                  {contactObject.is_active != 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-info"
+                      onClick={() => this.onRestore(contactObject.id)}
+                    >
+                      Restore
+                    </button>
                   )}
                   <button
                     type="button"

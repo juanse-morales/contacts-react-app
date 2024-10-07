@@ -30,7 +30,7 @@ class Card extends React.Component {
 
   handleCloseModal() {
     this.setState({ showModal: false, selectedContactObject: null });
-    this.getIndex();
+    this.getIndex(this.props.page);
   }
 
   getIndex(page) {

@@ -10,14 +10,23 @@ class Card extends React.Component {
     this.handleCreateClick = this.handleCreateClick.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.handleRowClick = this.handleRowClick.bind(this);
+    this.handleInput = this.handleInput.bind(this);
+    this.getIndexContact = this.getIndexContact.bind(this);
+    this.getIndex = this.getIndex.bind(this);
   }
 
   state = {
     page: "home",
+    search: "",
     contacts: [],
     showModal: false,
     selectedContactObject: null,
   };
+
+  handleInput(event) {
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
+  }
 
   handleRowClick(contactObject) {
     this.setState({ selectedContactObject: contactObject, showModal: true });
@@ -33,6 +42,28 @@ class Card extends React.Component {
   }
 
   getIndex(page) {
+    this.setState({ search: "" });
+
+    switch (page) {
+      case "home": 
+        this.getIndexContact();
+        break;
+      case "archived":
+        this.getArchivedContact();
+        break;
+      case "deleted":
+        this.getDeletedContact();
+        break;
+      case "blocked":
+        this.getBlockedContact();
+        break;
+      default:
+        this.getIndexContact();
+        break;
+    }
+  }
+
+  onSearchClick(page) {
     switch (page) {
       case "home": 
         this.getIndexContact();
@@ -53,28 +84,41 @@ class Card extends React.Component {
   }
 
   getIndexContact() {
-    AuthAxios.get("/contact").then((res) => {
+    let { search } = this.state;
+    if (search === '') search = "null";
+
+    AuthAxios.get("/contact/index/" + search)
+    .then((res) => {
       console.log(res.data);
       this.setState({ contacts: res.data });
     });
   }
 
   getArchivedContact() {
-    AuthAxios.get("/contact/archived").then((res) => {
+    let { search } = this.state;
+    if (search === '') search = "null";
+
+    AuthAxios.get("/contact/archived/" + search).then((res) => {
       console.log(res.data);
       this.setState({ contacts: res.data });
     });
   }
-  
+
   getDeletedContact() {
-    AuthAxios.get("/contact/deleted").then((res) => {
+    let { search } = this.state;
+    if (search === '') search = "null";
+
+    AuthAxios.get("/contact/deleted/" + search).then((res) => {
       console.log(res.data);
       this.setState({ contacts: res.data });
     });
   }
-  
+
   getBlockedContact() {
-    AuthAxios.get("/contact/blocked").then((res) => {
+    let { search } = this.state;
+    if (search === '') search = "null";
+
+    AuthAxios.get("/contact/blocked/" + search).then((res) => {
       console.log(res.data);
       this.setState({ contacts: res.data });
     });
@@ -98,18 +142,23 @@ class Card extends React.Component {
       <>
         <div className="main-card">
           <div className="search-form-container">
-            <form className="search-form">
+            <div className="search-form">
               <input
                 className="form-control"
                 type="text"
                 name="search"
                 id="search-contact"
                 placeholder="Type filter"
+                onChange={this.handleInput}
               />
-              <button id="search-button" className="btn btn-secondary">
+              <button
+                id="search-button"
+                className="btn btn-secondary"
+                onClick={() => this.onSearchClick(this.props.page)}
+              >
                 Search
               </button>
-            </form>
+            </div>
           </div>
           <div className="contact-list-container">
             <div className="table-container table-responsive">

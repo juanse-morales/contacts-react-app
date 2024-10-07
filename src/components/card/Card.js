@@ -29,6 +29,7 @@ class Card extends React.Component {
 
   handleCloseModal() {
     this.setState({ showModal: false, selectedContactObject: null });
+    this.getIndexContact();
   }
 
   getIndexContact() {

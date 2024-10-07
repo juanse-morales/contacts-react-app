@@ -31,7 +31,7 @@ class AddContact extends React.Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    const { name, phone_number } = this.state;
+    const { name, last_name, phone_number, email } = this.state;
 
     const errors = [];
 
@@ -49,13 +49,15 @@ class AddContact extends React.Component {
 
     if (contactObject) {
       Swal.showLoading();
+      const objectToSend = {name, last_name, phone_number, email};
       axios
-        .put("http://localhost:8000/api/contact/"+contactObject.id, contactFormData)
+        .put("http://localhost:8000/api/contact/"+contactObject.id, objectToSend)
         .then((res) => {
           Swal.close();
           console.log(res.data);
 
           Swal.fire("Actualizado con Éxito!");
+          this.props.closeModal();
         })
         .catch(err => {
           Swal.close();
@@ -72,6 +74,7 @@ class AddContact extends React.Component {
           console.log(res.data);
 
           Swal.fire("Guardado con Éxito!");
+          this.props.closeModal();
         })
         .catch(err => {
           Swal.close();
@@ -80,8 +83,6 @@ class AddContact extends React.Component {
           Swal.fire("Error al guardar");
         });
     }
-
-    this.props.closeModal();
   }
 
   componentDidMount() {

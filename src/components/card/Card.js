@@ -63,7 +63,7 @@ class Card extends React.Component {
             </form>
           </div>
           <div className="contact-list-container">
-            <div className="table-responsive">
+            <div className="table-container table-responsive">
               <table className="table table-hover table-rounded">
                 <thead>
                   <tr>

@@ -1,15 +1,23 @@
 import React from "react";
 import "./App.css";
+import { Routes, Route } from "react-router-dom";
 import Card from "./components/card/Card";
-import NavBar from "./components/navbar/NavBar";
+import Layout from "./Layout";
 
 class App extends React.Component {
-  
   render() {
     return (
-      <div className="app-container">
-        <NavBar />
-        <Card />
+      <div>
+        <Routes>
+          <Route path="/" element={<Layout />} >
+            <Route path="/home" element={<Card />} />
+
+            <Route path="/" element={<Card />} />
+            <Route path="*" element={<Card />} />
+          </Route>
+          
+          
+        </Routes>
       </div>
     );
   }

@@ -1,3 +1,3 @@
-const UrlApi = 'http://localhost:8000/api';
+const UrlApi = 'http://127.0.0.1:8000/api';
 
 export default UrlApi;

@@ -12,7 +12,7 @@ class NavBar extends React.Component {
             src={`${process.env.PUBLIC_URL}/icon.png`}
             alt="logo"
           />
-          <a className="navbar-brand" href="#">
+          <a className="navbar-brand" href="/">
             Contacts
           </a>
           <button

@@ -2,7 +2,6 @@ import React from "react";
 import "./Card.css";
 import AddContact from "../modal/AddContact";
 import AuthAxios from "../../services/AuthAxios";
-import Swal from "sweetalert2";
 
 class Card extends React.Component {
   constructor(props) {

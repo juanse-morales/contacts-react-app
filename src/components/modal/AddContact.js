@@ -57,7 +57,12 @@ class AddContact extends React.Component {
 
           Swal.fire("Actualizado con Éxito!");
         })
-        .catch(console.log);
+        .catch(err => {
+          Swal.close();
+          console.log(err);
+          
+          Swal.fire("Error al actualizar");
+        });
     } else {
       Swal.showLoading();
       axios
@@ -68,7 +73,12 @@ class AddContact extends React.Component {
 
           Swal.fire("Guardado con Éxito!");
         })
-        .catch(console.log);
+        .catch(err => {
+          Swal.close();
+          console.log(err);
+          
+          Swal.fire("Error al guardar");
+        });
     }
 
     this.props.closeModal();

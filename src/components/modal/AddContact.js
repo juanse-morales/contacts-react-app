@@ -12,14 +12,10 @@ class AddContact extends React.Component {
   }
 
   state = {
-    name: this.props.contactObject ? this.props.contactObject.name : "",
-    last_name: this.props.contactObject
-      ? this.props.contactObject.last_name
-      : "",
-    phone_number: this.props.contactObject
-      ? this.props.contactObject.phone_number
-      : "",
-    email: this.props.contactObject ? this.props.contactObject.email : "",
+    name: "",
+    last_name: "",
+    phone_number: "",
+    email: "",
     errors: [],
   };
 
@@ -28,9 +24,8 @@ class AddContact extends React.Component {
   }
 
   handleInput(event) {
-    const state = this.state;
-    state[event.target.name] = event.target.value;
-    this.setState({ state });
+    const { name, value } = event.target;
+    this.setState({ [name]: value });
   }
 
   handleSubmit(event) {
@@ -50,27 +45,50 @@ class AddContact extends React.Component {
     const contactForm = document.getElementById("contact-form");
     const contactFormData = new FormData(contactForm);
 
-    Swal.showLoading();
-    axios
-      .post("http://localhost:8000/api/contact", contactFormData)
-      .then((res) => {
-        Swal.close();
-        console.log(res.data);
+    const { contactObject } = this.props;
 
-        Swal.fire("Guardado con Éxito!");
-      })
-      .catch(console.log);
+    if (contactObject) {
+      Swal.showLoading();
+      axios
+        .put("http://localhost:8000/api/contact/"+contactObject.id, contactFormData)
+        .then((res) => {
+          Swal.close();
+          console.log(res.data);
+
+          Swal.fire("Actualizado con Éxito!");
+        })
+        .catch(console.log);
+    } else {
+      Swal.showLoading();
+      axios
+        .post("http://localhost:8000/api/contact", contactFormData)
+        .then((res) => {
+          Swal.close();
+          console.log(res.data);
+
+          Swal.fire("Guardado con Éxito!");
+        })
+        .catch(console.log);
+    }
+
+    this.props.closeModal();
+  }
+
+  componentDidMount() {
+    const { contactObject } = this.props;
+    if (contactObject) {
+      this.setState({
+        name: contactObject.name || "",
+        last_name: contactObject.last_name || "",
+        phone_number: contactObject.phone_number || "",
+        email: contactObject.email || "",
+      });
+    }
   }
 
   render() {
     const { showModal, closeModal, contactObject } = this.props;
-
-    let name = contactObject ? (contactObject.name ? contactObject.name : "") : "";
-    let last_name = contactObject ? (contactObject.last_name ?  contactObject.last_name: "") : "";
-    let phone_number = contactObject ? (contactObject.phone_number ? contactObject.phone_number : "") : "";
-    let email = contactObject ? (contactObject.email ? contactObject.email : "") : "";
-
-    // const { name, last_name, phone_number, email } = contactObject;
+    const { name, last_name, phone_number, email } = this.state;
 
     return (
       <>
@@ -86,7 +104,7 @@ class AddContact extends React.Component {
               <div className="modal-content">
                 <div className="modal-header">
                   <h1 className="modal-title fs-5" id="exampleModalLabel">
-                    Add contact
+                    {contactObject ? 'Edit contact' : 'Add contact'}
                   </h1>
                   <button
                     type="button"
@@ -193,7 +211,7 @@ class AddContact extends React.Component {
                     className="btn btn-primary"
                     onClick={this.handleSubmit}
                   >
-                    Save
+                    {contactObject ? 'Update': 'Save'}
                   </button>
                 </div>
               </div>

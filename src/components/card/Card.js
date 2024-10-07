@@ -5,11 +5,10 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 class Card extends React.Component {
-
   constructor() {
     super();
 
-    this.handleOpenModal = this.handleOpenModal.bind(this);
+    this.handleCreateClick = this.handleCreateClick.bind(this);
     this.handleCloseModal = this.handleCloseModal.bind(this);
     this.handleRowClick = this.handleRowClick.bind(this);
   }
@@ -17,15 +16,15 @@ class Card extends React.Component {
   state = {
     contacts: [],
     showModal: false,
-    selectedContactObject: null
-  }
+    selectedContactObject: null,
+  };
 
   handleRowClick(contactObject) {
     this.setState({ selectedContactObject: contactObject, showModal: true });
   }
 
-  handleOpenModal() {
-    this.setState({ showModal: true });
+  handleCreateClick() {
+    this.setState({ showModal: true, selectedContactObject: null });
   }
 
   handleCloseModal() {
@@ -33,11 +32,10 @@ class Card extends React.Component {
   }
 
   getIndexContact() {
-    axios.get('http://localhost:8000/api/contact')
-      .then(res => {
-        console.log(res.data);
-        this.setState({contacts: res.data});
-      });
+    axios.get("http://localhost:8000/api/contact").then((res) => {
+      console.log(res.data);
+      this.setState({ contacts: res.data });
+    });
   }
 
   componentDidMount() {
@@ -75,11 +73,10 @@ class Card extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {contacts.map(contact => (
-                    <tr 
+                  {contacts.map((contact) => (
+                    <tr
                       key={contact.id}
-                      onClick={() => this.handleRowClick(contact)} 
-                      
+                      onClick={() => this.handleRowClick(contact)}
                     >
                       <td>{contact.name}</td>
                       <td>{contact.last_name}</td>
@@ -96,14 +93,20 @@ class Card extends React.Component {
               <button
                 type="button"
                 className="add-button"
-                onClick={this.handleOpenModal}
+                onClick={this.handleCreateClick}
               >
                 <i className="add-button-icon bi bi-plus-circle-fill"></i>
               </button>
             </div>
           </div>
         </div>
-        <AddContact showModal={showModal} closeModal={this.handleCloseModal} contactObject={selectedContactObject} />
+        {showModal && (
+          <AddContact
+            showModal={showModal}
+            closeModal={this.handleCloseModal}
+            contactObject={selectedContactObject}
+          />
+        )}
       </>
     );
   }

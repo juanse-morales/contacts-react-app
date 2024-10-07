@@ -49,9 +49,12 @@ class AddContact extends React.Component {
 
     if (contactObject) {
       Swal.showLoading();
-      const objectToSend = {name, last_name, phone_number, email};
+      const objectToSend = { name, last_name, phone_number, email };
       axios
-        .put("http://localhost:8000/api/contact/"+contactObject.id, objectToSend)
+        .put(
+          "http://localhost:8000/api/contact/" + contactObject.id,
+          objectToSend
+        )
         .then((res) => {
           Swal.close();
           console.log(res.data);
@@ -59,10 +62,10 @@ class AddContact extends React.Component {
           Swal.fire("Actualizado con Éxito!");
           this.props.closeModal();
         })
-        .catch(err => {
+        .catch((err) => {
           Swal.close();
           console.log(err);
-          
+
           Swal.fire("Error al actualizar");
         });
     } else {
@@ -76,13 +79,31 @@ class AddContact extends React.Component {
           Swal.fire("Guardado con Éxito!");
           this.props.closeModal();
         })
-        .catch(err => {
+        .catch((err) => {
           Swal.close();
           console.log(err);
-          
+
           Swal.fire("Error al guardar");
         });
     }
+  }
+
+  onDelete(id) {
+    Swal.showLoading();
+    axios.delete('http://localhost:8000/api/contact/'+id)
+      .then(res => {
+        Swal.close();
+        console.log(res.data);
+        
+        Swal.fire("Eliminado con éxito!");
+        this.props.closeModal();
+      })
+      .catch(err => {
+        Swal.close();
+        console.log(err);
+        
+        Swal.fire("Error al eliminar");
+      })
   }
 
   componentDidMount() {
@@ -115,7 +136,7 @@ class AddContact extends React.Component {
               <div className="modal-content">
                 <div className="modal-header">
                   <h1 className="modal-title fs-5" id="exampleModalLabel">
-                    {contactObject ? 'Edit contact' : 'Add contact'}
+                    {contactObject ? "Edit contact" : "Add contact"}
                   </h1>
                   <button
                     type="button"
@@ -217,12 +238,21 @@ class AddContact extends React.Component {
                   </form>
                 </div>
                 <div className="modal-footer">
+                  {contactObject && (
+                    <button 
+                      type="button" 
+                      className="btn btn-danger"
+                      onClick={() => this.onDelete(contactObject.id)}
+                    >
+                      Delete
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="btn btn-primary"
                     onClick={this.handleSubmit}
                   >
-                    {contactObject ? 'Update': 'Save'}
+                    {contactObject ? "Update" : "Save"}
                   </button>
                 </div>
               </div>

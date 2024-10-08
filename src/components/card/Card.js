@@ -17,32 +17,73 @@ class Card extends React.Component {
 
   state = {
     page: "home",
-    search: "",
+    searchQuery: "",
     contacts: [],
+    filteredContacts: [],
     showModal: false,
     selectedContactObject: null,
   };
 
+  /**
+   * Filter the data based on the search query
+   * 
+   */
+  filterData() {
+    const { searchQuery, contacts } = this.state;
+
+    // Filter contacts based on the search query matching any column 
+    const filteredContacts = contacts.filter((contact) => {
+      return (
+        contact.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        contact.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        contact.phone_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        contact.email.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
+
+    // Update the filteredContacts state with the filtered results
+    this.setState({ filteredContacts });
+  };
+
+  /**
+   * Event handler for the search input field.
+   * It updates the search query state and triggers the filterData function.
+   * 
+   * @param {object} event - The event object from the input field.
+   */
   handleInput(event) {
-    const { name, value } = event.target;
-    this.setState({ [name]: value });
+    const searchQuery = event.target.value;
+    this.setState({ searchQuery }, this.filterData);
   }
 
+  /**
+   * Handler to open modal dialog to show contact when clicking on table row
+   * 
+   * @param {object} contactObject - The contact object from the table row 
+   */
   handleRowClick(contactObject) {
     this.setState({ selectedContactObject: contactObject, showModal: true });
   }
 
+  /**
+   * Handler to open modal dialog to save a new contact
+   * 
+   */
   handleCreateClick() {
     this.setState({ showModal: true, selectedContactObject: null });
   }
 
+  /**
+   * Handler to close modal dialog change showModal state 
+   * 
+   */
   handleCloseModal() {
     this.setState({ showModal: false, selectedContactObject: null });
     this.getIndex(this.props.page);
   }
 
   getIndex(page) {
-    this.setState({ search: "" });
+    this.setState({ searchQuery: "" });
 
     switch (page) {
       case "home": 
@@ -84,43 +125,43 @@ class Card extends React.Component {
   }
 
   getIndexContact() {
-    let { search } = this.state;
-    if (search === '') search = "null";
+    let { searchQuery } = this.state;
+    if (searchQuery === '') searchQuery = "null";
 
-    AuthAxios.get("/contact/index/" + search)
+    AuthAxios.get("/contact/index/" + searchQuery)
     .then((res) => {
       console.log(res.data);
-      this.setState({ contacts: res.data });
+      this.setState({ contacts: res.data }, this.filterData);
     });
   }
 
   getArchivedContact() {
-    let { search } = this.state;
-    if (search === '') search = "null";
+    let { searchQuery } = this.state;
+    if (searchQuery === '') searchQuery = "null";
 
-    AuthAxios.get("/contact/archived/" + search).then((res) => {
+    AuthAxios.get("/contact/archived/" + searchQuery).then((res) => {
       console.log(res.data);
-      this.setState({ contacts: res.data });
+      this.setState({ contacts: res.data }, this.filterData);
     });
   }
 
   getDeletedContact() {
-    let { search } = this.state;
-    if (search === '') search = "null";
+    let { searchQuery } = this.state;
+    if (searchQuery === '') searchQuery = "null";
 
-    AuthAxios.get("/contact/deleted/" + search).then((res) => {
+    AuthAxios.get("/contact/deleted/" + searchQuery).then((res) => {
       console.log(res.data);
-      this.setState({ contacts: res.data });
+      this.setState({ contacts: res.data }, this.filterData);
     });
   }
 
   getBlockedContact() {
-    let { search } = this.state;
-    if (search === '') search = "null";
+    let { searchQuery } = this.state;
+    if (searchQuery === '') searchQuery = "null";
 
-    AuthAxios.get("/contact/blocked/" + search).then((res) => {
+    AuthAxios.get("/contact/blocked/" + searchQuery).then((res) => {
       console.log(res.data);
-      this.setState({ contacts: res.data });
+      this.setState({ contacts: res.data }, this.filterData);
     });
   }
 
@@ -137,7 +178,8 @@ class Card extends React.Component {
   }
 
   render() {
-    const { contacts, showModal, selectedContactObject } = this.state;
+    const { contacts, filteredContacts, showModal, selectedContactObject, searchQuery } = this.state;
+
     return (
       <>
         <div className="main-card">
@@ -149,12 +191,13 @@ class Card extends React.Component {
                 name="search"
                 id="search-contact"
                 placeholder="Type filter"
+                value={searchQuery}
                 onChange={this.handleInput}
               />
               <button
                 id="search-button"
                 className="btn btn-secondary"
-                onClick={() => this.onSearchClick(this.props.page)}
+                onClick={() => this.filterData()}
               >
                 Search
               </button>
@@ -172,7 +215,7 @@ class Card extends React.Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {contacts.map((contact) => (
+                  {filteredContacts.map((contact) => (
                     <tr
                       key={contact.id}
                       onClick={() => this.handleRowClick(contact)}

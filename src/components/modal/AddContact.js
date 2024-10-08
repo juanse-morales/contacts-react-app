@@ -296,7 +296,7 @@ class AddContact extends React.Component {
                   </form>
                 </div>
                 <div className="modal-footer">
-                  {contactObject.is_active === 1 && (
+                  {contactObject != null && contactObject.is_active === 1 && (
                     <>
                       <button
                         type="button"
@@ -321,7 +321,7 @@ class AddContact extends React.Component {
                       </button>
                     </>
                   )}
-                  {contactObject.is_active !== 1 && (
+                  {contactObject != null && contactObject.is_active !== 1 && (
                     <button
                       type="button"
                       className="btn btn-info"

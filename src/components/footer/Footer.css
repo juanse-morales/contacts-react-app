@@ -1,0 +1,24 @@
+footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  margin-top: -100px;
+  width: 260px;
+  height: 50px;
+  background-color: #f8f9fa;
+  border-radius: 10px 0 0 0;
+}
+
+@media screen and (max-width: 1335px) {
+  .footer-container {
+    display: flex;
+    justify-content: end;
+  }
+  footer {
+    position: static;
+    margin-top: 30px;
+  }
+}

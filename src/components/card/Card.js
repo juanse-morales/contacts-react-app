@@ -104,26 +104,6 @@ class Card extends React.Component {
     }
   }
 
-  onSearchClick(page) {
-    switch (page) {
-      case "home": 
-        this.getIndexContact();
-        break;
-      case "archived":
-        this.getArchivedContact();
-        break;
-      case "deleted":
-        this.getDeletedContact();
-        break;
-      case "blocked":
-        this.getBlockedContact();
-        break;
-      default:
-        this.getIndexContact();
-        break;
-    }
-  }
-
   getIndexContact() {
     let { searchQuery } = this.state;
     if (searchQuery === '') searchQuery = "null";

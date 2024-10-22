@@ -16,8 +16,7 @@ class AddContact extends React.Component {
     last_name: "",
     phone_number: "",
     email: "",
-    isLoadedPhoto: false,
-    imgBlob: "",
+    imgBlob: "./user.png",
     errors: [],
   };
 
@@ -184,13 +183,12 @@ class AddContact extends React.Component {
               const imgObjectUrl = URL.createObjectURL(blob);
 
               Swal.close();
-              this.setState({ isLoadedPhoto: true, imgBlob: imgObjectUrl });
+              this.setState({ imgBlob: imgObjectUrl });
             }
           })
           .catch((err) => {
             console.log(err);
             Swal.close();
-            this.setState({ isLoadedPhoto: false });
           });
       })
       .catch(console.log);
@@ -211,8 +209,7 @@ class AddContact extends React.Component {
 
   render() {
     const { showModal, closeModal, contactObject } = this.props;
-    const { name, last_name, phone_number, email, isLoadedPhoto, imgBlob } =
-      this.state;
+    const { name, last_name, phone_number, email, imgBlob } = this.state;
 
     return (
       <>
@@ -244,12 +241,7 @@ class AddContact extends React.Component {
                     onSubmit={this.handleSubmit}
                   >
                     <div className="contact-photo-container">
-                      {!isLoadedPhoto && (
-                        <img src="./user.png" alt="contact" width="160px" />
-                      )}
-                      {isLoadedPhoto && (
-                        <iframe src={imgBlob} title="photo" height="200px" width="200px" />
-                      )}
+                      <img src={imgBlob} alt="contact_photo" width="160px" />
                     </div>
                     <div className="contact-info-container">
                       <div className="row">

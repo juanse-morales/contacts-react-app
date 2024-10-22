@@ -8,6 +8,7 @@ class AddContact extends React.Component {
     super(props);
 
     this.handleInput = this.handleInput.bind(this);
+    this.handleFileInput = this.handleFileInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -16,6 +17,7 @@ class AddContact extends React.Component {
     last_name: "",
     phone_number: "",
     email: "",
+    photo_file: "",
     imgBlob: "./user.png",
     errors: [],
   };
@@ -27,6 +29,34 @@ class AddContact extends React.Component {
   handleInput(event) {
     const { name, value } = event.target;
     this.setState({ [name]: value });
+  }
+
+  handleFileInput(event) {
+    this.setState({ photo_file: event.target.files });
+  }
+
+  onLoadPhoto(contact_id){
+    Swal.showLoading();
+    
+    const files = this.state.photo_file;
+    if (files != null && files.length > 0) {
+      let formData = new FormData();
+      formData.append(files[0].name, files[0]);
+      
+      AuthAxios.post(`/photo/upload/${contact_id}`, formData)
+        .then((res) => {
+          console.log(res.data);
+          Swal.close();
+
+          Swal.fire('Foto cargada con éxito');
+        })
+        .catch((err) => {
+          console.log(err);
+
+          Swal.close();
+          Swal.fire('Error al cargar la foto');
+        });
+    }
   }
 
   handleSubmit(event) {
@@ -55,7 +85,9 @@ class AddContact extends React.Component {
         .then((res) => {
           Swal.close();
           console.log(res.data);
-
+          
+          this.onLoadPhoto(res.data.contact.id);
+          
           Swal.fire("Actualizado con Éxito!");
           this.props.closeModal();
         })
@@ -71,6 +103,8 @@ class AddContact extends React.Component {
         .then((res) => {
           Swal.close();
           console.log(res.data);
+
+          this.onLoadPhoto(res.data.contact.id);
 
           Swal.fire("Guardado con Éxito!");
           this.props.closeModal();
@@ -242,6 +276,14 @@ class AddContact extends React.Component {
                   >
                     <div className="contact-photo-container">
                       <img src={imgBlob} alt="contact_photo" width="160px" />
+                      {contactObject != null && contactObject.is_active === 1 && (
+                        <input 
+                          className="form-control"
+                          type="file"
+                          id="files"
+                          onChange={this.handleFileInput}
+                        />
+                      )}
                     </div>
                     <div className="contact-info-container">
                       <div className="row">

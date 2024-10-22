@@ -16,6 +16,8 @@ class AddContact extends React.Component {
     last_name: "",
     phone_number: "",
     email: "",
+    isLoadedPhoto: false,
+    imgBlob: "",
     errors: [],
   };
 
@@ -50,11 +52,7 @@ class AddContact extends React.Component {
     if (contactObject) {
       Swal.showLoading();
       const objectToSend = { name, last_name, phone_number, email };
-      AuthAxios
-        .put(
-          "/contact/" + contactObject.id,
-          objectToSend
-        )
+      AuthAxios.put("/contact/" + contactObject.id, objectToSend)
         .then((res) => {
           Swal.close();
           console.log(res.data);
@@ -70,8 +68,7 @@ class AddContact extends React.Component {
         });
     } else {
       Swal.showLoading();
-      AuthAxios
-        .post("/contact", contactFormData)
+      AuthAxios.post("/contact", contactFormData)
         .then((res) => {
           Swal.close();
           console.log(res.data);
@@ -90,8 +87,7 @@ class AddContact extends React.Component {
 
   onDelete(id) {
     Swal.showLoading();
-    AuthAxios
-      .delete("/contact/" + id)
+    AuthAxios.delete("/contact/" + id)
       .then((res) => {
         Swal.close();
         console.log(res.data);
@@ -109,8 +105,7 @@ class AddContact extends React.Component {
 
   onArchive(id) {
     Swal.showLoading();
-    AuthAxios
-      .put("/contact/archive/" + id)
+    AuthAxios.put("/contact/archive/" + id)
       .then((res) => {
         Swal.close();
         console.log(res.data);
@@ -128,8 +123,7 @@ class AddContact extends React.Component {
 
   onBlock(id) {
     Swal.showLoading();
-    AuthAxios
-      .put("/contact/block/" + id)
+    AuthAxios.put("/contact/block/" + id)
       .then((res) => {
         Swal.close();
         console.log(res.data);
@@ -147,8 +141,7 @@ class AddContact extends React.Component {
 
   onRestore(id) {
     Swal.showLoading();
-    AuthAxios
-      .put("/contact/restore/" + id)
+    AuthAxios.put("/contact/restore/" + id)
       .then((res) => {
         Swal.close();
         console.log(res.data);
@@ -164,6 +157,45 @@ class AddContact extends React.Component {
       });
   }
 
+  getFileExtension(filename) {
+    // Split the filename by dot
+    const parts = filename.split(".");
+
+    // return of parts of the result array
+    return parts.length > 1 ? parts.pop() : "";
+  }
+
+  viewImg(contact_id) {
+    Swal.showLoading();
+    let filename = "";
+
+    AuthAxios.get(`/photo/getfilename/${contact_id}`)
+      .then((res) => {
+        filename = res.data;
+        const fileExtension = this.getFileExtension(filename).toLowerCase();
+        const imgExtensions = ["jpg", "jpeg", "png", "gif"];
+
+        AuthAxios.get(`/photo/view/${filename}`, { responseType: "blob" })
+          .then((res) => {
+            if (imgExtensions.includes(fileExtension)) {
+              const blob = new Blob([res.data], {
+                type: `image/${fileExtension}`,
+              });
+              const imgObjectUrl = URL.createObjectURL(blob);
+
+              Swal.close();
+              this.setState({ isLoadedPhoto: true, imgBlob: imgObjectUrl });
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.close();
+            this.setState({ isLoadedPhoto: false });
+          });
+      })
+      .catch(console.log);
+  }
+
   componentDidMount() {
     const { contactObject } = this.props;
     if (contactObject) {
@@ -173,12 +205,14 @@ class AddContact extends React.Component {
         phone_number: contactObject.phone_number || "",
         email: contactObject.email || "",
       });
+      this.viewImg(contactObject.id);
     }
   }
 
   render() {
     const { showModal, closeModal, contactObject } = this.props;
-    const { name, last_name, phone_number, email } = this.state;
+    const { name, last_name, phone_number, email, isLoadedPhoto, imgBlob } =
+      this.state;
 
     return (
       <>
@@ -210,11 +244,12 @@ class AddContact extends React.Component {
                     onSubmit={this.handleSubmit}
                   >
                     <div className="contact-photo-container">
-                      <img
-                        src={`${process.env.PUBLIC_URL}/user.png`}
-                        alt="contact"
-                        width="160px"
-                      />
+                      {!isLoadedPhoto && (
+                        <img src="./user.png" alt="contact" width="160px" />
+                      )}
+                      {isLoadedPhoto && (
+                        <iframe src={imgBlob} title="photo" height="200px" width="200px" />
+                      )}
                     </div>
                     <div className="contact-info-container">
                       <div className="row">

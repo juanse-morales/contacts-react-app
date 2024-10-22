@@ -83,7 +83,7 @@ class Card extends React.Component {
   }
 
   getIndex(page) {
-    this.setState({ searchQuery: "" });
+    this.setState({ searchQuery: "", page });
 
     switch (page) {
       case "home": 
@@ -158,7 +158,7 @@ class Card extends React.Component {
   }
 
   render() {
-    const { contacts, filteredContacts, showModal, selectedContactObject, searchQuery } = this.state;
+    const { page, filteredContacts, showModal, selectedContactObject, searchQuery } = this.state;
 
     return (
       <>
@@ -212,13 +212,15 @@ class Card extends React.Component {
           </div>
           <div className="footer-main-card-container">
             <div className="add-button-container">
-              <button
-                type="button"
-                className="add-button"
-                onClick={this.handleCreateClick}
-              >
-                <i className="add-button-icon bi bi-plus-circle-fill"></i>
-              </button>
+              {page == 'home' && (
+                <button
+                  type="button"
+                  className="add-button"
+                  onClick={this.handleCreateClick}
+                >
+                  <i className="add-button-icon bi bi-plus-circle-fill"></i>
+                </button>
+              )}
             </div>
           </div>
         </div>

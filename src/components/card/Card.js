@@ -212,7 +212,7 @@ class Card extends React.Component {
           </div>
           <div className="footer-main-card-container">
             <div className="add-button-container">
-              {page == 'home' && (
+              {page === 'home' && (
                 <button
                   type="button"
                   className="add-button"

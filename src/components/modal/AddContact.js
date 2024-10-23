@@ -9,15 +9,18 @@ class AddContact extends React.Component {
 
     this.handleInput = this.handleInput.bind(this);
     this.handleFileInput = this.handleFileInput.bind(this);
+    this.handleFileCVInput = this.handleFileCVInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   state = {
+    id: "",
     name: "",
     last_name: "",
     phone_number: "",
     email: "",
     photo_file: "",
+    cv_file: "",
     imgBlob: "./user.png",
     errors: [],
   };
@@ -35,32 +38,43 @@ class AddContact extends React.Component {
     this.setState({ photo_file: event.target.files });
   }
 
-  onLoadPhoto(contact_id){
+  handleFileCVInput(event) {
+    this.setState({ cv_file: event.target.files });
+  }
+
+  async onLoadPhoto() {
     Swal.showLoading();
-    
+
     const files = this.state.photo_file;
     if (files != null && files.length > 0) {
       let formData = new FormData();
       formData.append(files[0].name, files[0]);
-      
-      AuthAxios.post(`/photo/upload/${contact_id}`, formData)
+
+      AuthAxios.post(`/photo/upload/${this.state.id}`, formData)
         .then((res) => {
           console.log(res.data);
           Swal.close();
 
-          Swal.fire('Foto cargada con éxito');
+          Swal.fire("Foto cargada con éxito");
         })
         .catch((err) => {
           console.log(err);
 
           Swal.close();
-          Swal.fire('Error al cargar la foto');
+          Swal.fire("Error al cargar la foto");
         });
     }
   }
 
-  handleSubmit(event) {
+  async handleSubmit(event) {
     event.preventDefault();
+
+    await this.onSaveContact();
+    await this.onLoadPhoto();
+
+  }
+
+  async onSaveContact() {
 
     const { name, last_name, phone_number, email } = this.state;
 
@@ -85,9 +99,7 @@ class AddContact extends React.Component {
         .then((res) => {
           Swal.close();
           console.log(res.data);
-          
-          this.onLoadPhoto(res.data.contact.id);
-          
+
           Swal.fire("Actualizado con Éxito!");
           this.props.closeModal();
         })
@@ -103,8 +115,6 @@ class AddContact extends React.Component {
         .then((res) => {
           Swal.close();
           console.log(res.data);
-
-          this.onLoadPhoto(res.data.contact.id);
 
           Swal.fire("Guardado con Éxito!");
           this.props.closeModal();
@@ -199,31 +209,36 @@ class AddContact extends React.Component {
   }
 
   viewImg(contact_id) {
-    Swal.showLoading();
+    
     let filename = "";
 
+    Swal.showLoading();
     AuthAxios.get(`/photo/getfilename/${contact_id}`)
       .then((res) => {
+        Swal.close();
         filename = res.data;
-        const fileExtension = this.getFileExtension(filename).toLowerCase();
-        const imgExtensions = ["jpg", "jpeg", "png", "gif"];
+        if (filename) {
+          const fileExtension = this.getFileExtension(filename).toLowerCase();
+          const imgExtensions = ["jpg", "jpeg", "png", "gif"];
 
-        AuthAxios.get(`/photo/view/${filename}`, { responseType: "blob" })
-          .then((res) => {
-            if (imgExtensions.includes(fileExtension)) {
-              const blob = new Blob([res.data], {
-                type: `image/${fileExtension}`,
-              });
-              const imgObjectUrl = URL.createObjectURL(blob);
+          Swal.showLoading();
+          AuthAxios.get(`/photo/view/${filename}`, { responseType: "blob" })
+            .then((res) => {
+              if (imgExtensions.includes(fileExtension)) {
+                const blob = new Blob([res.data], {
+                  type: `image/${fileExtension}`,
+                });
+                const imgObjectUrl = URL.createObjectURL(blob);
 
+                Swal.close();
+                this.setState({ imgBlob: imgObjectUrl });
+              }
+            })
+            .catch((err) => {
+              console.log(err);
               Swal.close();
-              this.setState({ imgBlob: imgObjectUrl });
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-            Swal.close();
-          });
+            });
+        }
       })
       .catch(console.log);
   }
@@ -232,6 +247,7 @@ class AddContact extends React.Component {
     const { contactObject } = this.props;
     if (contactObject) {
       this.setState({
+        id: contactObject.id || "",
         name: contactObject.name || "",
         last_name: contactObject.last_name || "",
         phone_number: contactObject.phone_number || "",
@@ -276,14 +292,15 @@ class AddContact extends React.Component {
                   >
                     <div className="contact-photo-container">
                       <img src={imgBlob} alt="contact_photo" width="160px" />
-                      {contactObject != null && contactObject.is_active === 1 && (
-                        <input 
-                          className="form-control"
-                          type="file"
-                          id="files"
-                          onChange={this.handleFileInput}
-                        />
-                      )}
+                      {contactObject != null &&
+                        contactObject.is_active === 1 && (
+                          <input
+                            className="form-control form-control-sm"
+                            type="file"
+                            id="files"
+                            onChange={this.handleFileInput}
+                          />
+                        )}
                     </div>
                     <div className="contact-info-container">
                       <div className="row">
@@ -361,6 +378,22 @@ class AddContact extends React.Component {
                           </div>
                         </div>
                       </div>
+                      {contactObject != null &&
+                        contactObject.is_active === 1 && (
+                          <div className="row">
+                            <div className="col">
+                              <label htmlFor="inputFile" className="form-label">
+                                CV
+                              </label>
+                              <input
+                                type="file"
+                                className="form-control form-control-sm"
+                                id="files"
+                                onChange={this.handleFileCVInput}
+                              />
+                            </div>
+                          </div>
+                        )}
                     </div>
                   </form>
                 </div>

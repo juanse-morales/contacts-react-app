@@ -43,35 +43,36 @@ class AddContact extends React.Component {
   }
 
   async onLoadPhoto() {
-    Swal.showLoading();
-
     const files = this.state.photo_file;
+    
     if (files != null && files.length > 0) {
       let formData = new FormData();
       formData.append(files[0].name, files[0]);
 
-      AuthAxios.post(`/photo/upload/${this.state.id}`, formData)
-        .then((res) => {
-          console.log(res.data);
-          Swal.close();
+      try {
+        Swal.showLoading();
+        const res = await AuthAxios.post(`/photo/upload/${this.state.id}`, formData);
 
-          Swal.fire("Foto cargada con éxito");
-        })
-        .catch((err) => {
-          console.log(err);
+        console.log(res.data);
+        Swal.close();
+        Swal.fire("Foto cargada con éxito");
 
-          Swal.close();
-          Swal.fire("Error al cargar la foto");
-        });
+        return res.data;
+      } catch (err) {
+        console.log(err);
+
+        Swal.close();
+        Swal.fire("Error al cargar la foto");
+      }
     }
   }
 
   async handleSubmit(event) {
     event.preventDefault();
 
-    await this.onSaveContact();
-    await this.onLoadPhoto();
-
+    let result1 = await this.onSaveContact();
+    let result2 = await this.onLoadPhoto();
+    console.log("Results handleSubmit: ", result1, result2);
   }
 
   async onSaveContact() {
@@ -93,38 +94,43 @@ class AddContact extends React.Component {
     const { contactObject } = this.props;
 
     if (contactObject) {
-      Swal.showLoading();
       const objectToSend = { name, last_name, phone_number, email };
-      AuthAxios.put("/contact/" + contactObject.id, objectToSend)
-        .then((res) => {
-          Swal.close();
-          console.log(res.data);
+      
+      try {
+        Swal.showLoading();
+        const res = await AuthAxios.put("/contact/" + contactObject.id, objectToSend);
+        
+        Swal.close();
+        console.log(res.data);
 
-          Swal.fire("Actualizado con Éxito!");
-          this.props.closeModal();
-        })
-        .catch((err) => {
-          Swal.close();
-          console.log(err);
+        Swal.fire("Actualizado con Éxito!");
+        this.props.closeModal();
+        
+        return res.data;
+      } catch (err) {
+        Swal.close();
+        console.log(err);
 
-          Swal.fire("Error al actualizar");
-        });
+        Swal.fire("Error al actualizar");
+      }
     } else {
-      Swal.showLoading();
-      AuthAxios.post("/contact", contactFormData)
-        .then((res) => {
-          Swal.close();
-          console.log(res.data);
+      try {
+        Swal.showLoading();
+        const res = await AuthAxios.post("/contact", contactFormData);
 
-          Swal.fire("Guardado con Éxito!");
-          this.props.closeModal();
-        })
-        .catch((err) => {
-          Swal.close();
-          console.log(err);
+        Swal.close();
+        console.log(res.data);
 
-          Swal.fire("Error al guardar");
-        });
+        Swal.fire("Guardado con Éxito!");
+        this.props.closeModal();
+
+        return res.data;
+      } catch (err) {
+        Swal.close();
+        console.log(err);
+
+        Swal.fire("Error al guardar");
+      }
     }
   }
 

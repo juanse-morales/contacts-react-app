@@ -611,7 +611,7 @@ class AddContact extends React.Component {
           <ViewFile
             showModal={showViewFileModal}
             closeModal={this.handleCloseViewFileModal}
-            blob={cv_blob_url}
+            pdf_blob={cv_blob_url}
           />
         )}
         {showModal && (

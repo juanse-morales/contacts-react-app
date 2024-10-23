@@ -8,8 +8,28 @@ class ViewFile extends React.Component {
     super(props);
   }
 
+  state = {
+    pdf_blob_url: null,
+  };
+
+  componentDidMount() {
+    const { pdf_blob } = this.props;
+
+    if (pdf_blob) {
+      //const blob_url = URL.createObjectURL(pdf_blob);
+      this.setState({ pdf_blob_url: pdf_blob });
+    }
+  }
+
+  componentWillUnmount() {
+    // Clean up the Blob URL when the component is unmounted
+    if (this.state.pdf_blob_url) {
+      URL.revokeObjectURL(this.state.pdf_blob_url);
+    }
+  }
+
   render() {
-    const { showModal, closeModal, blob } = this.props;
+    const { showModal, closeModal, pdf_blob } = this.props;
 
     return (
       <>
@@ -34,9 +54,10 @@ class ViewFile extends React.Component {
                   ></button>
                 </div>
                 <div className="modal-body">
-                  <iframe 
-                    src={blob}
-                    height="90%"
+                  <iframe
+                    title="PDF Viewer"
+                    src={pdf_blob}
+                    height="600vh"
                     width="100%"
                   />
                 </div>

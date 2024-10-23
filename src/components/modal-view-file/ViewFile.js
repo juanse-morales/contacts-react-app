@@ -1,18 +1,15 @@
 import React from "react";
 import "./ViewFile.css";
-
+import Swal from "sweetalert2";
+import AuthAxios from "../../services/AuthAxios";
 
 class ViewFile extends React.Component {
   constructor(props) {
     super(props);
   }
 
-  state = {
-
-  }
-  
   render() {
-    const { showModal, closeModal } = this.props;
+    const { showModal, closeModal, blob } = this.props;
 
     return (
       <>
@@ -22,7 +19,6 @@ class ViewFile extends React.Component {
             id="addContactModal"
             tabIndex="-1"
             aria-labelledby="exampleModalLabel"
-            
           >
             <div className="modal-dialog modal-lg modal-dialog-centered">
               <div className="modal-content">
@@ -38,11 +34,13 @@ class ViewFile extends React.Component {
                   ></button>
                 </div>
                 <div className="modal-body">
-
+                  <iframe 
+                    src={blob}
+                    height="90%"
+                    width="100%"
+                  />
                 </div>
-                <div className="modal-footer">
-
-                </div>
+                <div className="modal-footer"></div>
               </div>
             </div>
           </div>

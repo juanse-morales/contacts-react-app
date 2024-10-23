@@ -2,6 +2,7 @@ import React from "react";
 import "./AddContact.css";
 import Swal from "sweetalert2";
 import AuthAxios from "../../services/AuthAxios";
+import ViewFile from '../modal-view-file/ViewFile';
 
 class AddContact extends React.Component {
   constructor(props) {
@@ -11,6 +12,8 @@ class AddContact extends React.Component {
     this.handleFileInput = this.handleFileInput.bind(this);
     this.handleFileCVInput = this.handleFileCVInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleCloseViewFileModal = this.handleCloseViewFileModal.bind(this);
+    this.handleClickFilenameModal = this.handleClickFilenameModal.bind(this);
   }
 
   state = {
@@ -24,7 +27,21 @@ class AddContact extends React.Component {
     imgBlob: "./user.png",
     filename: "",
     errors: [],
+
+    showViewFileModal: false,
   };
+
+  /**
+   * Handler to close modal dialog change showModal state 
+   * 
+   */
+  handleCloseViewFileModal() {
+    this.setState({ showViewFileModal: false });
+  }
+
+  handleClickFilenameModal() {
+    this.setState({ showViewFileModal: true });
+  }
 
   verificarError(elemento) {
     return this.state.errors.indexOf(elemento) !== -1;
@@ -314,8 +331,7 @@ class AddContact extends React.Component {
 
   render() {
     const { showModal, closeModal, contactObject } = this.props;
-    const { name, last_name, phone_number, email, imgBlob, filename } =
-      this.state;
+    const { name, last_name, phone_number, email, imgBlob, filename, showViewFileModal } = this.state;
 
     return (
       <>
@@ -447,7 +463,10 @@ class AddContact extends React.Component {
                                   CV:
                                 </label>
                                 <p>
-                                  <a className="link-underline">{filename}</a>
+                                  <a 
+                                    className="link-underline"
+                                    onClick={this.handleClickFilenameModal}
+                                  >{filename}</a>
                                 </p>
                               </div>
                             </div>
@@ -510,6 +529,13 @@ class AddContact extends React.Component {
               </div>
             </div>
           </div>
+        )}
+        {showViewFileModal && (
+          <ViewFile
+            showModal={showViewFileModal}
+            closeModal={this.handleCloseViewFileModal}
+            filename={filename}
+          />
         )}
         {showModal && (
           <div className="modal-backdrop show" onClick={closeModal}></div>

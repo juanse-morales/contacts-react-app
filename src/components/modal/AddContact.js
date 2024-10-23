@@ -27,7 +27,8 @@ class AddContact extends React.Component {
     imgBlob: "./user.png",
     original_filename: "",
     new_filename: "",
-    cv_blob: "",
+    cv_blob_url: "",
+    cv_blob: null,
     errors: [],
 
     showViewFileModal: false,
@@ -45,22 +46,22 @@ class AddContact extends React.Component {
    * Handler to open view file modal dialog
    */
   handleClickFilenameModal() {
-    const { new_filename, cv_blob } = this.state;
+    const { new_filename, cv_blob_url } = this.state;
     const file_extension = this.getFileExtension(this.state.new_filename);
-    
+
     if (file_extension === "pdf") {
       this.setState({ showViewFileModal: true });
     } else {
       const link = document.createElement("a");
-      link.href = cv_blob;
+      link.href = cv_blob_url;
       link.setAttribute("download", new_filename);
-      
+
       //trigger the download link
       link.click();
 
       // Cleanup the link and object URL
       link.parentNode.removeChild(link);
-      window.URL.revokeObjectURL(cv_blob);
+      window.URL.revokeObjectURL(cv_blob_url);
     }
   }
 
@@ -326,8 +327,8 @@ class AddContact extends React.Component {
     AuthAxios.get(`/file/getoriginalfilename/${contact_id}`)
       .then((res) => {
         Swal.close();
-        
-        this.setState({ original_filename:  res.data });
+
+        this.setState({ original_filename: res.data });
       })
       .catch((err) => {
         console.log(err);
@@ -335,44 +336,40 @@ class AddContact extends React.Component {
       });
   }
 
-  getCVNewFilename(contact_id) {
+  viewCVFile(contact_id) {
     Swal.showLoading();
     AuthAxios.get(`/file/getfilename/${contact_id}`)
       .then((res) => {
         Swal.close();
-        this.setState({ new_filename: res.data });
-      })
-      .catch((err) => {
-        console.log(err);
-        Swal.close();
-      });
-  }
+        const new_filename = res.data;
+        this.setState({ new_filename: new_filename });
+        const fileExtension = this.getFileExtension(new_filename);
 
-  viewCVFile() {
-    const { new_filename } = this.state;
-    const fileExtension = this.getFileExtension(new_filename);
+        AuthAxios.get(`/file/view/${new_filename}`)
+          .then((res) => {
+            if (fileExtension === "pdf") {
+              const blob = new Blob([res.data], { type: "application/pdf" });
+              const objectUrl = URL.createObjectURL(blob);
 
-    Swal.showLoading();
-    AuthAxios.get(`/file/view/${new_filename}`)
-      .then((res) => {
-        if (fileExtension === "pdf") {
-          const blob = new Blob([res.data], { type: "application/pdf" });
-          const objectUrl = URL.createObjectURL(blob);
+              this.setState({ cv_blob_url: objectUrl });
+              Swal.close();
+            } else {
+              const blob = new Blob([res.data], {
+                type: "application/octet-stream",
+              });
+              // create download link for the blob
+              const url = window.URL.createObjectURL(blob);
 
-          this.setState({ cv_blob: objectUrl });
-          Swal.close();
-        } else {
-          const blob = new Blob([res.data], {
-            type: "application/octet-stream",
+              this.setState({
+                cv_blob_url: url,
+              });
+              Swal.close();
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            Swal.close();
           });
-          // create download link for the blob
-          const url = window.URL.createObjectURL(blob);
-
-          this.setState({
-            cv_blob: url,
-          });
-          Swal.close();
-        }
       })
       .catch((err) => {
         console.log(err);
@@ -390,11 +387,10 @@ class AddContact extends React.Component {
         phone_number: contactObject.phone_number || "",
         email: contactObject.email || "",
       });
-      
+
       this.viewImg(contactObject.id);
       this.getCVFilename(contactObject.id);
-      this.getCVNewFilename(contactObject.id);
-      this.viewCVFile();
+      this.viewCVFile(contactObject.id);
     }
   }
 
@@ -408,7 +404,8 @@ class AddContact extends React.Component {
       imgBlob,
       original_filename,
       showViewFileModal,
-      cv_blob,
+      cv_blob_url,
+      new_filename
     } = this.state;
 
     return (
@@ -614,7 +611,7 @@ class AddContact extends React.Component {
           <ViewFile
             showModal={showViewFileModal}
             closeModal={this.handleCloseViewFileModal}
-            blob={cv_blob}
+            blob={cv_blob_url}
           />
         )}
         {showModal && (

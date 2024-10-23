@@ -22,6 +22,7 @@ class AddContact extends React.Component {
     photo_file: "",
     cv_file: "",
     imgBlob: "./user.png",
+    filename: "",
     errors: [],
   };
 
@@ -44,16 +45,19 @@ class AddContact extends React.Component {
 
   async onLoadPhoto() {
     const files = this.state.photo_file;
-    
+
     if (files != null && files.length > 0) {
       let formData = new FormData();
       formData.append(files[0].name, files[0]);
 
       try {
         Swal.showLoading();
-        const res = await AuthAxios.post(`/photo/upload/${this.state.id}`, formData);
+        const res = await AuthAxios.post(
+          `/photo/upload/${this.state.id}`,
+          formData
+        );
 
-        console.log(res.data);
+        //console.log(res.data);
         Swal.close();
         Swal.fire("Foto cargada con éxito");
 
@@ -67,16 +71,44 @@ class AddContact extends React.Component {
     }
   }
 
+  async onLoadCV() {
+    const files = this.state.cv_file;
+
+    if (files != null && files.length > 0) {
+      let formData = new FormData();
+      formData.append(files[0].name, files[0]);
+
+      try {
+        Swal.showLoading();
+        const res = await AuthAxios.post(
+          `/file/upload/${this.state.id}`,
+          formData
+        );
+
+        //console.log(res.data);
+        Swal.close();
+        Swal.fire("Archivo cargada con éxito");
+
+        return res.data;
+      } catch (err) {
+        console.log(err);
+
+        Swal.close();
+        Swal.fire("Error al cargar el archivo");
+      }
+    }
+  }
+
   async handleSubmit(event) {
     event.preventDefault();
 
     let result1 = await this.onSaveContact();
     let result2 = await this.onLoadPhoto();
-    console.log("Results handleSubmit: ", result1, result2);
+    let result3 = await this.onLoadCV();
+    console.log("Results handleSubmit: ", result1, result2, result3);
   }
 
   async onSaveContact() {
-
     const { name, last_name, phone_number, email } = this.state;
 
     const errors = [];
@@ -95,17 +127,20 @@ class AddContact extends React.Component {
 
     if (contactObject) {
       const objectToSend = { name, last_name, phone_number, email };
-      
+
       try {
         Swal.showLoading();
-        const res = await AuthAxios.put("/contact/" + contactObject.id, objectToSend);
-        
+        const res = await AuthAxios.put(
+          "/contact/" + contactObject.id,
+          objectToSend
+        );
+
         Swal.close();
-        console.log(res.data);
+        //console.log(res.data);
 
         Swal.fire("Actualizado con Éxito!");
         this.props.closeModal();
-        
+
         return res.data;
       } catch (err) {
         Swal.close();
@@ -119,7 +154,7 @@ class AddContact extends React.Component {
         const res = await AuthAxios.post("/contact", contactFormData);
 
         Swal.close();
-        console.log(res.data);
+        //console.log(res.data);
 
         Swal.fire("Guardado con Éxito!");
         this.props.closeModal();
@@ -215,7 +250,6 @@ class AddContact extends React.Component {
   }
 
   viewImg(contact_id) {
-    
     let filename = "";
 
     Swal.showLoading();
@@ -249,6 +283,20 @@ class AddContact extends React.Component {
       .catch(console.log);
   }
 
+  getCVFilename(contact_id) {
+    Swal.showLoading();
+    AuthAxios.get(`/file/getoriginalfilename/${contact_id}`)
+      .then((res) => {
+        Swal.close();
+        const filename = res.data;
+        this.setState({ filename });
+      })
+      .catch((err) => {
+        console.log(err);
+        Swal.close();
+      });
+  }
+
   componentDidMount() {
     const { contactObject } = this.props;
     if (contactObject) {
@@ -260,12 +308,14 @@ class AddContact extends React.Component {
         email: contactObject.email || "",
       });
       this.viewImg(contactObject.id);
+      this.getCVFilename(contactObject.id);
     }
   }
 
   render() {
     const { showModal, closeModal, contactObject } = this.props;
-    const { name, last_name, phone_number, email, imgBlob } = this.state;
+    const { name, last_name, phone_number, email, imgBlob, filename } =
+      this.state;
 
     return (
       <>
@@ -298,6 +348,7 @@ class AddContact extends React.Component {
                   >
                     <div className="contact-photo-container">
                       <img src={imgBlob} alt="contact_photo" width="160px" />
+                      <br />
                       {contactObject != null &&
                         contactObject.is_active === 1 && (
                           <input
@@ -387,10 +438,20 @@ class AddContact extends React.Component {
                       {contactObject != null &&
                         contactObject.is_active === 1 && (
                           <div className="row">
-                            <div className="col">
-                              <label htmlFor="inputFile" className="form-label">
-                                CV
-                              </label>
+                            <div className="col-4">
+                              <div className="form-group mb-3">
+                                <label
+                                  htmlFor="inputFile"
+                                  className="form-label"
+                                >
+                                  CV:
+                                </label>
+                                <p>
+                                  <a className="link-underline">{filename}</a>
+                                </p>
+                              </div>
+                            </div>
+                            <div className="col-8">
                               <input
                                 type="file"
                                 className="form-control form-control-sm"

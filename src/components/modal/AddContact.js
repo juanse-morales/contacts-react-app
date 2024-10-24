@@ -46,21 +46,21 @@ class AddContact extends React.Component {
    * Handler to open view file modal dialog
    */
   handleClickFilenameModal() {
-    const { new_filename, cv_blob_url } = this.state;
-    const file_extension = this.getFileExtension(this.state.new_filename);
+    const { original_filename, cv_blob_url } = this.state;
+    const file_extension = this.getFileExtension(original_filename);
 
     if (file_extension === "pdf") {
       this.setState({ showViewFileModal: true });
     } else {
       const link = document.createElement("a");
       link.href = cv_blob_url;
-      link.setAttribute("download", new_filename);
+      link.setAttribute("download", original_filename);
 
       //trigger the download link
       link.click();
 
       // Cleanup the link and object URL
-      link.parentNode.removeChild(link);
+      //link.parentNode.removeChild(link);
       window.URL.revokeObjectURL(cv_blob_url);
     }
   }

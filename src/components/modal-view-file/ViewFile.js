@@ -6,26 +6,23 @@ import AuthAxios from "../../services/AuthAxios";
 class ViewFile extends React.Component {
   constructor(props) {
     super(props);
+
+    this.downloadFile = this.downloadFile.bind(this);
   }
 
-  state = {
-    pdf_blob_url: null,
-  };
+  downloadFile() {
+    const { pdf_blob, original_filename } = this.props;
 
-  componentDidMount() {
-    const { pdf_blob } = this.props;
+    const link = document.createElement("a");
+    link.href = pdf_blob;
+    link.setAttribute("download", original_filename);
 
-    if (pdf_blob) {
-      //const blob_url = URL.createObjectURL(pdf_blob);
-      this.setState({ pdf_blob_url: pdf_blob });
-    }
-  }
+    //trigger the download link
+    link.click();
 
-  componentWillUnmount() {
-    // Clean up the Blob URL when the component is unmounted
-    if (this.state.pdf_blob_url) {
-      URL.revokeObjectURL(this.state.pdf_blob_url);
-    }
+    // Cleanup the link and object URL
+    //link.parentNode.removeChild(link);
+    window.URL.revokeObjectURL(pdf_blob);
   }
 
   render() {
@@ -57,11 +54,19 @@ class ViewFile extends React.Component {
                   <iframe
                     title="PDF Viewer"
                     src={pdf_blob}
-                    height="600vh"
+                    height="400vh"
                     width="100%"
                   />
                 </div>
-                <div className="modal-footer"></div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn"
+                    onClick={this.downloadFile}
+                  >
+                    Download
+                  </button>
+                </div>
               </div>
             </div>
           </div>

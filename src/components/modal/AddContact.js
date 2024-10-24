@@ -407,7 +407,6 @@ class AddContact extends React.Component {
       original_filename,
       showViewFileModal,
       cv_blob_url,
-      new_filename,
     } = this.state;
 
     return (
@@ -614,6 +613,7 @@ class AddContact extends React.Component {
             showModal={showViewFileModal}
             closeModal={this.handleCloseViewFileModal}
             pdf_blob={cv_blob_url}
+            original_filename={original_filename}
           />
         )}
         {showModal && (

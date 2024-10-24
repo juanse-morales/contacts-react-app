@@ -342,34 +342,36 @@ class AddContact extends React.Component {
       .then((res) => {
         Swal.close();
         const new_filename = res.data;
-        this.setState({ new_filename: new_filename });
-        const fileExtension = this.getFileExtension(new_filename);
+        if (new_filename) {
+          this.setState({ new_filename: new_filename });
+          const fileExtension = this.getFileExtension(new_filename);
 
-        AuthAxios.get(`/file/view/${new_filename}`)
-          .then((res) => {
-            if (fileExtension === "pdf") {
-              const blob = new Blob([res.data], { type: "application/pdf" });
-              const objectUrl = URL.createObjectURL(blob);
+          AuthAxios.get(`/file/view/${new_filename}`, { responseType: "blob" })
+            .then((res) => {
+              if (fileExtension === "pdf") {
+                const blob = new Blob([res.data], { type: "application/pdf" });
+                const objectUrl = URL.createObjectURL(blob);
 
-              this.setState({ cv_blob_url: objectUrl });
+                this.setState({ cv_blob_url: objectUrl });
+                Swal.close();
+              } else {
+                const blob = new Blob([res.data], {
+                  type: "application/octet-stream",
+                });
+                // create download link for the blob
+                const url = window.URL.createObjectURL(blob);
+
+                this.setState({
+                  cv_blob_url: url,
+                });
+                Swal.close();
+              }
+            })
+            .catch((err) => {
+              console.log(err);
               Swal.close();
-            } else {
-              const blob = new Blob([res.data], {
-                type: "application/octet-stream",
-              });
-              // create download link for the blob
-              const url = window.URL.createObjectURL(blob);
-
-              this.setState({
-                cv_blob_url: url,
-              });
-              Swal.close();
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-            Swal.close();
-          });
+            });
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -405,7 +407,7 @@ class AddContact extends React.Component {
       original_filename,
       showViewFileModal,
       cv_blob_url,
-      new_filename
+      new_filename,
     } = this.state;
 
     return (

@@ -1,8 +1,8 @@
-# Getting Started with Create React App
+# Contacts Web App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Small compact App to manage your contacts
 
-## Available Scripts
+## Steps for running React Project
 
 In the project directory, you can run:
 
